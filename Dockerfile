@@ -212,7 +212,7 @@ RUN mkdir -p "$DATA_DIR/profiles/default" \
 
 
 USER "$BROWSERUSE_USER"
-VOLUME "$DATA_DIR"
+# VOLUME "$DATA_DIR"  # Linha removida para compatibilidade com o Railway
 EXPOSE 9242
 EXPOSE 9222
 
