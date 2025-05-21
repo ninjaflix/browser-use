@@ -114,7 +114,7 @@ RUN echo "[*] Setting up $BROWSERUSE_USER user uid=${DEFAULT_PUID}..." \
     # https://docs.linuxserver.io/general/understanding-puid-and-pgid
 
 # Install base apt dependencies (adding backports to access more recent apt updates)
-RUN --mount=type=cache,id=apt-cache \
+RUN --mount=type=cache,id=cache:apt \
     echo "[+] Installing APT base system dependencies for $TARGETPLATFORM..." \
 #     && echo 'deb https://deb.debian.org/debian bookworm-backports main contrib non-free' > /etc/apt/sources.list.d/backports.list \
     && mkdir -p /etc/apt/keyrings \
@@ -144,7 +144,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 WORKDIR /app
 COPY pyproject.toml uv.lock* /app/
 
-RUN --mount=type=cache,id=root-cache \
+RUN --mount=type=cache,id=cache:root \
     echo "[+] Setting up venv using uv in $VENV_DIR..." \
     && ( \
      which uv && uv --version \
@@ -165,8 +165,8 @@ RUN --mount=type=cache,target=/root/.cache,sharing=locked,id=cache-$TARGETARCH$T
      ) | tee -a /VERSION.txt
 
 # Install Chromium using playwright
-RUN --mount=type=cache,id=apt-cache \
-    --mount=type=cache,id=root-cache \
+RUN --mount=type=cache,id=cache:apt \
+    --mount=type=cache,id=cache:root \
     echo "[+] Installing chromium apt pkgs and binary to /root/.cache/ms-playwright..." \
     && apt-get update -qq \
     && playwright install --with-deps --no-shell chromium \
